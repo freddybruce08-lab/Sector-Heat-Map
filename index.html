@@ -7,98 +7,200 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Sector Flow">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="theme-color" content="#0b0f14">
+<meta name="theme-color" content="#06090f">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icon-180.png">
 <title>Sector Flow</title>
 <style>
-:root{--bg:#0b0f14;--card:#121821;--tx:#e6edf3;--mut:#8b98a7;--up:#1fbf75;--dn:#e5484d;--line:#1f2937}
-*{box-sizing:border-box;margin:0}
-body{background:var(--bg);color:var(--tx);font:15px/1.4 -apple-system,system-ui,Segoe UI,Roboto,sans-serif;padding:max(14px,env(safe-area-inset-top)) 12px max(18px,env(safe-area-inset-bottom))}
-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
-h1{font-size:19px}
-#st{font-size:12px;color:var(--mut)}#st.err{color:#f5a524}
-.dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#555;margin-right:6px}.dot.live{background:var(--up)}
-.tot{display:flex;gap:8px;margin:10px 0 12px}
-.tot div{flex:1;background:var(--card);border-radius:10px;padding:10px;min-width:0}
-.tot span{display:block;color:var(--mut);font-size:11px}.tot b{font-size:17px}
-#map{display:grid;grid-template-columns:repeat(6,1fr);grid-auto-rows:80px;gap:4px;margin-bottom:16px}
-.tile{border-radius:8px;padding:7px 8px;display:flex;flex-direction:column;justify-content:space-between;overflow:hidden;min-width:0}
-.tile b{font-size:15px}.tile small{font-size:11px;opacity:.85;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.tile .pc{font-size:16px;font-weight:700}
-h2{font-size:13px;margin:4px 0 6px;color:var(--mut);font-weight:600;text-transform:uppercase;letter-spacing:.05em}
-.row{display:grid;grid-template-columns:70px 1fr 84px;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid var(--line);font-size:13px}
-.row small{display:block;color:var(--mut);font-size:11px}
-.val{text-align:right;font-variant-numeric:tabular-nums;font-weight:600}
-svg{width:100%;height:30px;display:block}
+:root{--bg:#06090f;--card:#0e141d;--tx:#e8eef5;--mut:#7d8a9b;--up:#22e08a;--dn:#ff4d5e;--line:#1b2634}
+*{box-sizing:border-box;margin:0;-webkit-tap-highlight-color:transparent}
+html,body{background:var(--bg)}
+body{color:var(--tx);font:15px/1.4 -apple-system,system-ui,Segoe UI,Roboto,sans-serif;padding:max(12px,env(safe-area-inset-top)) 0 max(18px,env(safe-area-inset-bottom));overflow-x:hidden}
+header{display:flex;justify-content:space-between;align-items:center;padding:0 14px 6px}
+h1{font-size:19px;letter-spacing:.02em}
+h1 span{color:var(--up)}
+#st{font-size:12px;color:var(--mut);display:flex;align-items:center;gap:6px}
+.dot{width:8px;height:8px;border-radius:50%;background:#555}.dot.live{background:var(--up);box-shadow:0 0 8px var(--up);animation:pl 1.4s infinite}
+@keyframes pl{50%{opacity:.35}}
+.stats{display:flex;gap:8px;padding:6px 14px 8px}
+.stats div{flex:1;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:8px 10px;min-width:0}
+.stats span{display:block;color:var(--mut);font-size:10.5px;text-transform:uppercase;letter-spacing:.06em}
+.stats b{font-size:17px;font-variant-numeric:tabular-nums}
 .up{color:var(--up)}.dn{color:var(--dn)}
-.note{color:var(--mut);font-size:11.5px;margin-top:14px}
+#wrap{position:relative;width:100%;height:min(70vh,660px);min-height:440px}
+canvas{position:absolute;inset:0;width:100%;height:100%;touch-action:manipulation}
+.ctl{display:flex;align-items:center;gap:10px;padding:8px 14px}
+#play{background:#16314a;color:#cfe6ff;border:1px solid #24527c;border-radius:999px;padding:9px 16px;font-size:14px;font-weight:600;min-width:118px}
+#play.on{background:#1b3d2c;border-color:#2c7a52;color:#bff5d7}
+#tm{font-size:13px;color:var(--mut);min-width:78px;text-align:right;font-variant-numeric:tabular-nums}
+input[type=range]{flex:1;accent-color:#22e08a;height:28px}
+#det{margin:4px 14px 12px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px}
+#det h3{font-size:16px;display:flex;justify-content:space-between;align-items:baseline}
+#det small{color:var(--mut);font-weight:400;font-size:12px}
+.kv{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:8px 0}
+.kv span{display:block;color:var(--mut);font-size:10.5px;text-transform:uppercase;letter-spacing:.05em}
+.kv b{font-size:15px;font-variant-numeric:tabular-nums}
+#det svg{width:100%;height:70px;display:block}
+h2{font-size:12px;margin:6px 14px 4px;color:var(--mut);font-weight:600;text-transform:uppercase;letter-spacing:.07em}
+.row{display:grid;grid-template-columns:62px 1fr 78px;align-items:center;gap:8px;padding:7px 14px;border-bottom:1px solid var(--line);font-size:13px}
+.row.sel{background:#0f1a28}
+.row small{display:block;color:var(--mut);font-size:10.5px}
+.bar{position:relative;height:14px;background:#0b1119;border-radius:4px}
+.bar i{position:absolute;top:0;bottom:0;border-radius:4px}
+.bar::after{content:"";position:absolute;left:50%;top:-2px;bottom:-2px;width:1px;background:#2b3848}
+.val{text-align:right;font-variant-numeric:tabular-nums;font-weight:600}
+.note{color:var(--mut);font-size:11.5px;margin:12px 14px 0}
 </style>
 </head>
 <body>
-<header><h1>Sector Flow</h1><div id="st"><span class="dot" id="dot"></span><span id="stt">Loading…</span></div></header>
-<div class="tot">
-  <div><span>Net flow today</span><b id="net">–</b></div>
+<header><h1>SECTOR <span>FLOW</span></h1><div id="st"><span class="dot" id="dot"></span><span id="stt">Loading…</span></div></header>
+<div class="stats">
+  <div><span id="nl">Net flow</span><b id="net">–</b></div>
   <div><span>Top inflow</span><b id="top">–</b></div>
   <div><span>Top outflow</span><b id="bot">–</b></div>
 </div>
-<div id="map"></div>
-<h2>Money flow today (bar = net, line = intraday)</h2>
-<div id="flows"></div>
-<p class="note">Flow = each 5-minute bar's price × volume, counted as buying if the bar closed up and selling if it closed down, summed through the session. It's an estimate of pressure, not official fund creations/redemptions. Data is about 5 minutes delayed.</p>
+<div id="wrap"><canvas id="cv"></canvas></div>
+<div class="ctl"><button id="play">▶ Replay day</button><input id="sl" type="range" min="0" max="1000" value="1000"><span id="tm">Live</span></div>
+<div id="det"></div>
+<h2>Ranked by money flow</h2>
+<div id="rank"></div>
+<p class="note">Green streams = money flowing into a sector, red = flowing out. Stream thickness is the size of the flow. Node size is the sector's dollar volume, color is its price change. Flow is an estimate: each minute's price × volume counted as buying on an up-tick and selling on a down-tick. Data is about 5 minutes behind. Tap a sector for detail.</p>
 <script>
 const $=id=>document.getElementById(id);
-const fmt=n=>{const a=Math.abs(n);const s=a>=1e9?(a/1e9).toFixed(2)+"B":a>=1e6?(a/1e6).toFixed(0)+"M":(a/1e3).toFixed(0)+"K";return(n<0?"-$":"+$")+s};
-const col=c=>{const t=Math.max(-1.5,Math.min(1.5,c))/1.5;return t>=0?`rgba(31,191,117,${.25+.6*t})`:`rgba(229,72,77,${.25+.6*-t})`};
-function spark(a){
-  const ns="http://www.w3.org/2000/svg",s=document.createElementNS(ns,"svg");s.setAttribute("viewBox","0 0 100 30");s.setAttribute("preserveAspectRatio","none");
-  if(a&&a.length>1){
-    const mn=Math.min(0,...a),mx=Math.max(0,...a),r=(mx-mn)||1;
-    const y=v=>28-(v-mn)/r*26;
-    const z=document.createElementNS(ns,"line");z.setAttribute("x1",0);z.setAttribute("x2",100);z.setAttribute("y1",y(0));z.setAttribute("y2",y(0));z.setAttribute("stroke","#3b4756");z.setAttribute("stroke-width","0.5");s.append(z);
-    const p=document.createElementNS(ns,"polyline");
-    p.setAttribute("points",a.map((v,i)=>(i/(a.length-1)*100).toFixed(1)+","+y(v).toFixed(1)).join(" "));
-    p.setAttribute("fill","none");p.setAttribute("stroke",a[a.length-1]>=0?"#1fbf75":"#e5484d");p.setAttribute("stroke-width","1.6");p.setAttribute("vector-effect","non-scaling-stroke");s.append(p);
+const fmt=n=>{const a=Math.abs(n);const s=a>=1e9?(a/1e9).toFixed(2)+"B":a>=1e6?(a/1e6).toFixed(a>=1e8?0:1)+"M":(a/1e3).toFixed(0)+"K";return(n<0?"-$":"+$")+s};
+const UP=[34,224,138],DN=[255,77,94];
+let D=null,S=[],sel=null,replay={on:false,playing:false,t:1};
+const cv=$("cv"),ctx=cv.getContext("2d");let W=0,H=0,dpr=1;
+function resize(){const r=$("wrap").getBoundingClientRect();dpr=Math.min(window.devicePixelRatio||1,2);W=r.width;H=r.height;cv.width=W*dpr;cv.height=H*dpr;ctx.setTransform(dpr,0,0,dpr,0,0);layout()}
+function layout(){const cx=W/2,cy=H/2,rx=W*0.335,ry=H*0.35,n=S.length||1;S.forEach((s,i)=>{const a=-Math.PI/2+i*2*Math.PI/n;s.a=a;s.x=cx+rx*Math.cos(a);s.y=cy+ry*Math.sin(a)})}
+function setData(d){
+  D=d;const old=Object.fromEntries(S.map(s=>[s.sym,s]));
+  S=d.sectors.map(r=>{const o=old[r.sym]||{};return Object.assign(o,{sym:r.sym,name:r.name,price:r.price,chg:r.chg,volume:r.volume,spark:r.spark||[],tflow:r.flow,tdv:r.dollarVol,tchg:r.chg,
+    flow:o.flow!=null?o.flow:0,dv:o.dv!=null?o.dv:r.dollarVol,cchg:o.cchg!=null?o.cchg:r.chg,ph:o.ph||[],marketTime:r.marketTime})});
+  let md=1;S.forEach(s=>{const a=s.spark;for(let i=0;i<a.length;i++){const v=Math.abs(a[Math.min(a.length-1,i+2)]-a[Math.max(0,i-2)]);if(v>md)md=v}});D.maxDiff=md;
+  layout();if(!sel&&S.length)sel=S[0].sym;renderStatic();
+}
+function repAt(s,t){const a=s.spark,n=a.length;if(n<2)return{cum:0,diff:0};const f=t*(n-1),i=Math.floor(f),fr=f-i;const c=a[i]+(a[Math.min(n-1,i+1)]-a[i])*fr;const d=a[Math.min(n-1,i+2)]-a[Math.max(0,i-2)];return{cum:c,diff:d}}
+function timeLabel(t){const m=Math.round(240+t*960);const h=Math.floor(m/60)%24,mm=m%60;const ap=h>=12?"PM":"AM";const h12=h%12||12;return h12+":"+String(mm).padStart(2,"0")+" "+ap+" ET"}
+// per-frame target intensities
+function drive(){
+  let maxF=1;
+  if(!replay.on){S.forEach(s=>{if(Math.abs(s.tflow)>maxF)maxF=Math.abs(s.tflow)});}
+  S.forEach(s=>{
+    if(replay.on){const r=repAt(s,replay.t);s.tF=r.cum;s.tI=Math.pow(Math.min(1,Math.abs(r.diff)/D.maxDiff),.55);s.tD=Math.sign(r.diff)||1}
+    else{s.tF=s.tflow;s.tI=Math.pow(Math.abs(s.tflow)/maxF,.6);s.tD=Math.sign(s.tflow)||1}
+  });
+}
+const sleep=0;let last=performance.now(),time=0;
+function bez(p0,c,p1,t){const u=1-t;return[u*u*p0[0]+2*u*t*c[0]+t*t*p1[0],u*u*p0[1]+2*u*t*c[1]+t*t*p1[1]]}
+function frame(now){
+  const dt=Math.min(.05,(now-last)/1000);last=now;time+=dt;
+  if(S.length&&D){
+    if(replay.on&&replay.playing){replay.t+=dt/22;if(replay.t>=1){replay.t=1;replay.playing=false;$("play").classList.remove("on");$("play").textContent="↺ Replay day"}$("sl").value=Math.round(replay.t*1000);$("tm").textContent=timeLabel(replay.t);updateHub()}
+    drive();
+    S.forEach(s=>{const k=Math.min(1,dt*3.5);s.flow+=(s.tF-s.flow)*k;s.dv+=(s.tdv-s.dv)*k;s.cchg+=(s.tchg-s.cchg)*k;s.I=(s.I==null?s.tI:s.I+(s.tI-s.I)*Math.min(1,dt*4));s.dir=s.tD});
+    draw(dt);
   }
-  return s;
+  requestAnimationFrame(frame);
 }
-function render(d){
-  const rows=d.sectors;
-  const map=$("map");map.innerHTML="";
-  [...rows].sort((a,b)=>b.dollarVol-a.dollarVol).forEach((r,i)=>{
-    const t=document.createElement("div");t.className="tile";t.style.gridColumn=`span ${i<2?3:i<5?2:1}`;t.style.background=col(r.chg);
-    const top=document.createElement("div"),b=document.createElement("b"),sm=document.createElement("small");
-    b.textContent=r.sym;sm.textContent=r.name;top.append(b,sm);
-    const pc=document.createElement("div");pc.className="pc";pc.textContent=(r.chg>0?"+":"")+r.chg.toFixed(2)+"%";
-    t.append(top,pc);map.append(t);
+function rgba(c,a){return`rgba(${c[0]},${c[1]},${c[2]},${a})`}
+function chgCol(c){const t=Math.max(-1.5,Math.min(1.5,c))/1.5;return t>=0?[Math.round(20+14*t),Math.round(60+120*t),Math.round(50+50*t)]:[Math.round(70+120*-t),Math.round(26+10*-t),Math.round(38+10*-t)]}
+function draw(dt){
+  ctx.globalCompositeOperation="source-over";ctx.clearRect(0,0,W,H);
+  const cx=W/2,cy=H/2;
+  const g=ctx.createRadialGradient(cx,cy,0,cx,cy,Math.max(W,H)*.6);g.addColorStop(0,"#0c1522");g.addColorStop(1,"#06090f");ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
+  // faint rings
+  ctx.strokeStyle="rgba(120,150,190,.06)";ctx.lineWidth=1;for(let i=1;i<=3;i++){ctx.beginPath();ctx.ellipse(cx,cy,W*.33*i/2.2,H*.34*i/2.2,0,0,7);ctx.stroke()}
+  const maxDv=Math.max(1,...S.map(s=>s.dv)),hubR=Math.min(W,H)*.075;
+  // streams
+  ctx.globalCompositeOperation="lighter";
+  S.forEach((s,idx)=>{
+    const nr=nodeR(s,maxDv),dx=s.x-cx,dy=s.y-cy,dist=Math.hypot(dx,dy),ux=dx/dist,uy=dy/dist;
+    const hub=[cx+ux*hubR,cy+uy*hubR],nd=[s.x-ux*nr,s.y-uy*nr];
+    const inflow=s.dir>=0,col=inflow?UP:DN,I=s.I||0;
+    const bend=(inflow?1:-1)*dist*.16,c=[(hub[0]+nd[0])/2-uy*bend,(hub[1]+nd[1])/2+ux*bend];
+    const p0=inflow?hub:nd,p1=inflow?nd:hub;
+    // base line
+    ctx.strokeStyle=rgba(col,.07+.18*I);ctx.lineWidth=1+5*I;ctx.beginPath();ctx.moveTo(hub[0],hub[1]);ctx.quadraticCurveTo(c[0],c[1],nd[0],nd[1]);ctx.stroke();
+    // particles
+    const want=Math.round(5+34*I),ph=s.ph;while(ph.length<want)ph.push(Math.random());ph.length=want;
+    const sp=.16+.5*I,w=1.2+3.2*I,tail=.07+.05*I,sel_=s.sym===sel;
+    for(let i=0;i<ph.length;i++){
+      ph[i]=(ph[i]+sp*dt*(.8+.4*((i*37)%10)/10))%1;
+      const t=ph[i],a=bez(p0,c,p1,Math.max(0,t-tail)),b=bez(p0,c,p1,t);
+      const al=Math.min(1,Math.sin(Math.PI*t)*1.6)*(.45+.55*I)*(sel_?1:.85);
+      ctx.strokeStyle=rgba(col,al);ctx.lineWidth=w;ctx.lineCap="round";ctx.beginPath();ctx.moveTo(a[0],a[1]);ctx.lineTo(b[0],b[1]);ctx.stroke();
+      if(I>.35){ctx.fillStyle=rgba(col,al*.8);ctx.beginPath();ctx.arc(b[0],b[1],w*.9,0,7);ctx.fill()}
+    }
   });
-  const fl=$("flows");fl.innerHTML="";
-  [...rows].sort((a,b)=>b.flow-a.flow).forEach(r=>{
-    const row=document.createElement("div");row.className="row";
-    const nm=document.createElement("div"),b=document.createElement("b"),sm=document.createElement("small");
-    b.textContent=r.sym;sm.textContent=r.name;nm.append(b,sm);
-    const v=document.createElement("div");v.className="val "+(r.flow>=0?"up":"dn");v.textContent=fmt(r.flow);
-    row.append(nm,spark(r.spark),v);fl.append(row);
+  // hub
+  ctx.globalCompositeOperation="source-over";
+  const net=S.reduce((a,s)=>a+s.flow,0),hc=net>=0?UP:DN,pulse=1+.06*Math.sin(time*2.2);
+  const hg=ctx.createRadialGradient(cx,cy,0,cx,cy,hubR*2.6*pulse);hg.addColorStop(0,rgba(hc,.35));hg.addColorStop(1,rgba(hc,0));ctx.fillStyle=hg;ctx.beginPath();ctx.arc(cx,cy,hubR*2.6*pulse,0,7);ctx.fill();
+  ctx.fillStyle="#0b121c";ctx.strokeStyle=rgba(hc,.9);ctx.lineWidth=2;ctx.beginPath();ctx.arc(cx,cy,hubR,0,7);ctx.fill();ctx.stroke();
+  ctx.fillStyle="#9fb0c4";ctx.font="600 9px -apple-system,system-ui,sans-serif";ctx.textAlign="center";ctx.textBaseline="middle";ctx.fillText("MARKET",cx,cy-6);
+  ctx.fillStyle=net>=0?"#22e08a":"#ff4d5e";ctx.font="700 11px -apple-system,system-ui,sans-serif";ctx.fillText(fmt(net),cx,cy+7);
+  // nodes
+  S.forEach((s,i)=>{
+    const r=nodeR(s,maxDv),I=s.I||0,col=s.dir>=0?UP:DN,pr=r+3+Math.sin(time*2.4+i)*2*(.4+I);
+    const glow=ctx.createRadialGradient(s.x,s.y,r*.6,s.x,s.y,r*2);glow.addColorStop(0,rgba(col,.22*(.3+I)));glow.addColorStop(1,rgba(col,0));ctx.fillStyle=glow;ctx.beginPath();ctx.arc(s.x,s.y,r*2,0,7);ctx.fill();
+    const cc=chgCol(s.cchg),f=ctx.createRadialGradient(s.x-r*.3,s.y-r*.3,r*.1,s.x,s.y,r);f.addColorStop(0,rgba(cc.map(v=>Math.min(255,v+40)),1));f.addColorStop(1,rgba(cc,1));
+    ctx.fillStyle=f;ctx.beginPath();ctx.arc(s.x,s.y,r,0,7);ctx.fill();
+    ctx.strokeStyle=rgba(col,.35+.5*I);ctx.lineWidth=1.5;ctx.beginPath();ctx.arc(s.x,s.y,pr,0,7);ctx.stroke();
+    if(s.sym===sel){ctx.strokeStyle="#fff";ctx.lineWidth=2;ctx.beginPath();ctx.arc(s.x,s.y,r+7,0,7);ctx.stroke()}
+    ctx.fillStyle="#fff";ctx.font="700 12px -apple-system,system-ui,sans-serif";ctx.textAlign="center";ctx.textBaseline="middle";ctx.fillText(s.sym,s.x,s.y-6);
+    ctx.font="600 10px -apple-system,system-ui,sans-serif";ctx.fillStyle="rgba(255,255,255,.85)";ctx.fillText((s.cchg>0?"+":"")+s.cchg.toFixed(2)+"%",s.x,s.y+8);
+    // flow label outside (above for top node, below for the rest)
+    const topN=Math.sin(s.a)<-.9,ly=topN?s.y-r-9:s.y+r+13,tx=Math.min(W-30,Math.max(30,s.x));
+    ctx.textAlign="center";ctx.textBaseline="alphabetic";
+    ctx.font="700 12px -apple-system,system-ui,sans-serif";ctx.fillStyle=s.flow>=0?"#22e08a":"#ff4d5e";ctx.fillText(fmt(s.flow),tx,ly);
   });
-  const net=rows.reduce((a,r)=>a+r.flow,0),s=[...rows].sort((a,b)=>b.flow-a.flow);
-  $("net").textContent=fmt(net);$("net").className=net>=0?"up":"dn";
-  $("top").textContent=s[0].sym;$("top").className="up";$("bot").textContent=s[s.length-1].sym;$("bot").className="dn";
-  const age=(Date.now()-new Date(d.updated))/60000;
-  const mt=Math.max(...rows.map(r=>r.marketTime||0))*1000;
-  const mage=(Date.now()-mt)/60000;
+}
+function clampX(x,al){return al==="left"?Math.min(x,W-46):al==="right"?Math.max(x,46):Math.min(W-30,Math.max(30,x))}
+function nodeR(s,maxDv){return 20+11*Math.sqrt(Math.max(0,s.dv)/maxDv)}
+cv.addEventListener("pointerdown",e=>{
+  const r=cv.getBoundingClientRect(),x=e.clientX-r.left,y=e.clientY-r.top;let best=null,bd=1e9;
+  S.forEach(s=>{const d=Math.hypot(s.x-x,s.y-y);if(d<bd){bd=d;best=s}});
+  if(best&&bd<60){sel=best.sym;renderStatic()}
+});
+// UI
+function updateHub(){const net=S.reduce((a,s)=>a+(replay.on?repAt(s,replay.t).cum:s.tflow),0);$("net").textContent=fmt(net);$("net").className=net>=0?"up":"dn";
+  const ss=[...S].sort((a,b)=>(replay.on?repAt(b,replay.t).cum-repAt(a,replay.t).cum:b.tflow-a.tflow));if(ss.length){$("top").textContent=ss[0].sym;$("top").className="up";$("bot").textContent=ss[ss.length-1].sym;$("bot").className="dn"}
+  $("nl").textContent=replay.on?"Net flow so far":"Net flow today";renderRank()}
+function spark(a,w,h,t){
+  const ns="http://www.w3.org/2000/svg",s=document.createElementNS(ns,"svg");s.setAttribute("viewBox",`0 0 ${w} ${h}`);s.setAttribute("preserveAspectRatio","none");
+  if(a&&a.length>1){const mn=Math.min(0,...a),mx=Math.max(0,...a),r=(mx-mn)||1,y=v=>h-3-(v-mn)/r*(h-6);
+    const z=document.createElementNS(ns,"line");z.setAttribute("x1",0);z.setAttribute("x2",w);z.setAttribute("y1",y(0));z.setAttribute("y2",y(0));z.setAttribute("stroke","#2b3848");z.setAttribute("stroke-width","1");s.append(z);
+    const p=document.createElementNS(ns,"polyline");p.setAttribute("points",a.map((v,i)=>(i/(a.length-1)*w).toFixed(1)+","+y(v).toFixed(1)).join(" "));
+    p.setAttribute("fill","none");p.setAttribute("stroke",a[a.length-1]>=0?"#22e08a":"#ff4d5e");p.setAttribute("stroke-width","2");p.setAttribute("vector-effect","non-scaling-stroke");s.append(p);
+    if(t!=null){const x=t*w,l=document.createElementNS(ns,"line");l.setAttribute("x1",x);l.setAttribute("x2",x);l.setAttribute("y1",0);l.setAttribute("y2",h);l.setAttribute("stroke","#fff");l.setAttribute("stroke-opacity",".6");s.append(l)}}
+  return s}
+function renderDet(){
+  const s=S.find(x=>x.sym===sel),el=$("det");el.innerHTML="";if(!s)return;
+  const h=document.createElement("h3"),b=document.createElement("span");b.textContent=s.sym+" · "+s.name;const sm=document.createElement("small");sm.textContent="$"+s.price.toFixed(2);h.append(b,sm);
+  const kv=document.createElement("div");kv.className="kv";
+  [["Change",(s.tchg>0?"+":"")+s.tchg.toFixed(2)+"%",s.tchg>=0?"up":"dn"],["Net flow",fmt(s.tflow),s.tflow>=0?"up":"dn"],["$ volume",fmt(s.tdv).replace("+","")+"",""]].forEach(([k,v,c])=>{const d=document.createElement("div"),a=document.createElement("span"),bb=document.createElement("b");a.textContent=k;bb.textContent=v;bb.className=c;d.append(a,bb);kv.append(d)});
+  el.append(h,kv,spark(s.spark,300,70,replay.on?replay.t:null));
+}
+function renderRank(){
+  const rk=$("rank");rk.innerHTML="";const val=s=>replay.on?repAt(s,replay.t).cum:s.tflow;
+  const ss=[...S].sort((a,b)=>val(b)-val(a)),mx=Math.max(1,...ss.map(s=>Math.abs(val(s))));
+  ss.forEach(s=>{const v=val(s),row=document.createElement("div");row.className="row"+(s.sym===sel?" sel":"");
+    const nm=document.createElement("div"),b=document.createElement("b"),sm=document.createElement("small");b.textContent=s.sym;sm.textContent=s.name;nm.append(b,sm);
+    const bar=document.createElement("div");bar.className="bar";const i=document.createElement("i"),w=Math.abs(v)/mx*50;i.style.width=w+"%";i.style.left=v>=0?"50%":(50-w)+"%";i.style.background=v>=0?"var(--up)":"var(--dn)";bar.append(i);
+    const vv=document.createElement("div");vv.className="val "+(v>=0?"up":"dn");vv.textContent=fmt(v);row.append(nm,bar,vv);row.onclick=()=>{sel=s.sym;renderStatic()};rk.append(row)});
+}
+function renderStatic(){updateHub();renderDet();
+  const mt=Math.max(0,...S.map(s=>s.marketTime||0))*1000,mage=(Date.now()-mt)/60000,age=(Date.now()-new Date(D.updated))/60000;
   $("dot").className="dot"+(mage<20?" live":"");
-  $("stt").textContent=mage<20?`Live · updated ${Math.max(0,Math.round(age))} min ago`:`Market closed · last session ${new Date(mt).toLocaleString([], {weekday:"short",hour:"numeric",minute:"2-digit"})}`;
-  $("st").className="";
-}
-async function load(){
-  try{
-    const r=await fetch("data.json?t="+Date.now(),{cache:"no-store"});
-    if(!r.ok)throw 0;const d=await r.json();
-    if(!d.sectors||!d.sectors.length)throw 0;render(d);
-  }catch(e){$("stt").textContent="Waiting for first data run…";$("st").className="err"}
-}
-load();setInterval(load,60000);
-document.addEventListener("visibilitychange",()=>{if(!document.hidden)load()});
+  $("stt").textContent=mage<20?`Live · ${Math.max(0,Math.round(age))} min ago`:`Closed · ${new Date(mt).toLocaleString([], {weekday:"short",hour:"numeric",minute:"2-digit"})}`}
+$("play").onclick=()=>{
+  if(!replay.on||replay.t>=1){replay.on=true;replay.t=0;replay.playing=true}else{replay.playing=!replay.playing;replay.on=true}
+  $("play").classList.toggle("on",replay.playing);$("play").textContent=replay.playing?"❚❚ Pause":"▶ Resume";$("tm").textContent=timeLabel(replay.t);S.forEach(s=>s.ph.length=0)};
+$("sl").addEventListener("input",e=>{const v=e.target.value/1000;if(v>=.999){replay.on=false;replay.playing=false;replay.t=1;$("tm").textContent="Live";$("play").classList.remove("on");$("play").textContent="▶ Replay day"}else{replay.on=true;replay.playing=false;replay.t=v;$("play").classList.remove("on");$("play").textContent="▶ Resume";$("tm").textContent=timeLabel(v)}updateHub();renderDet()});
+async function load(){try{const r=await fetch("data.json?t="+Date.now(),{cache:"no-store"});if(!r.ok)throw 0;const d=await r.json();if(!d.sectors||!d.sectors.length)throw 0;setData(d)}catch(e){if(!D){$("stt").textContent="Waiting for first data run…"}}}
+window.addEventListener("resize",resize);resize();load();setInterval(load,60000);requestAnimationFrame(frame);
+document.addEventListener("visibilitychange",()=>{if(!document.hidden){last=performance.now();load()}});
 if("serviceWorker"in navigator)navigator.serviceWorker.register("sw.js").catch(()=>{});
 </script>
 </body>
