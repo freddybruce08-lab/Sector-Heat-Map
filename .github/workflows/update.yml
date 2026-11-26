@@ -4,7 +4,6 @@ on:
     - cron: "*/5 13-21 * * 1-5"
   workflow_dispatch:
   push:
-    paths: ["probe.mjs","fetch.mjs",".github/workflows/update.yml"]
 permissions:
   contents: write
 concurrency:
@@ -17,7 +16,6 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with: { node-version: 20 }
-      - run: node probe.mjs || true
       - run: node fetch.mjs
       - name: commit
         run: |
