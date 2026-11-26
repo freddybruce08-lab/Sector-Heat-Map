@@ -3,6 +3,8 @@ on:
   schedule:
     - cron: "*/5 13-21 * * 1-5"
   workflow_dispatch:
+  push:
+    paths: ["fetch.mjs",".github/workflows/update.yml"]
 permissions:
   contents: write
 concurrency:
