@@ -26,6 +26,8 @@ for(const [sym,name] of SECT){
     if(last!=null){const dir=Math.sign(p.y-last);flow+=dir*v}
     tot+=v;last=p.y;cum.push(Math.round(flow));
   }
+  const sc=tot>0?(num(d.volume)*price)/tot:0;
+  cum=cum.map(v=>Math.round(v*sc));flow=Math.round(flow*sc);tot=Math.round(tot*sc);
   const step=Math.max(1,Math.floor(cum.length/80));
   out.sectors.push({sym,name,price,prevClose:pc,chg:isNaN(num(d.percentageChange))?(price-pc)/pc*100:num(d.percentageChange),volume:num(d.volume),dollarVol:Math.round(tot),flow:Math.round(flow),spark:cum.filter((_,i)=>i%step===0),marketTime:Math.round(d.chart[d.chart.length-1].x/1000)});
   await new Promise(r=>setTimeout(r,500));
